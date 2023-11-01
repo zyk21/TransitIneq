@@ -1,0 +1,267 @@
+---
+title: "Figure5C"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(mediation)
+library(forcats)
+library(ggplot2)
+CBG_data <- read.csv("data/nyc_features.csv", header = TRUE, row.names = NULL)
+CBG_data <- CBG_data[CBG_data$vehicle_rate<=0.6,]
+CBG_data$Race <- as.factor(CBG_data$Race)
+CBG_data$Race <- fct_relevel(CBG_data$Race, "white")
+CBG_data$population <- CBG_data[, 'Total.population']
+```
+
+
+
+```{r}
+columns_to_check <- c('Race', 'reach', 'gyr')
+for_regress <- subset(CBG_data, complete.cases(CBG_data[, columns_to_check]))
+model <- lm(gyr ~ reach + Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediator_model <- lm(reach ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+total_model <- lm(gyr ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+b <- model$coefficients['reach']
+cpr <- model$coefficients['Raceblack']
+a <- mediator_model$coefficients['Raceblack']
+c0 <-total_model$coefficients['Raceblack']
+c(c0, a, cpr, b)
+mediation_result <- mediate(mediator_model, model, sims = 10000, treat='Race', mediator = 'reach', control.value = 'white', treat.value = 'black')
+summary(mediation_result)
+mediation_result$d0
+mediation_result$d0.ci
+mediation_result$z0
+mediation_result$z0.ci
+mediation_result$tau.coef
+mediation_result$tau.ci
+mediation_result$n0
+mediation_result$n0.ci
+```
+
+```{r}
+columns_to_check <- c('Race', 'reach', 'gyr')
+for_regress <- subset(CBG_data, complete.cases(CBG_data[, columns_to_check]))
+model <- lm(gyr ~ reach + Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediator_model <- lm(reach ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediation_result <- mediate(mediator_model, model, sims = 10000, treat='Race', mediator = 'reach', control.value = 'white', treat.value = 'Hispanic')
+summary(mediation_result)
+mediation_result$d0
+mediation_result$d0.ci
+mediation_result$tau.coef
+mediation_result$tau.ci
+mediation_result$n0
+mediation_result$n0.ci
+```
+
+```{r}
+columns_to_check <- c('Race', 'job', 'unemployed_ratio')
+for_regress <- subset(CBG_data, complete.cases(CBG_data[, columns_to_check]))
+model <- lm(unemployed_ratio ~ job + Race+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediator_model <- lm(job ~ Race+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+total_model <- lm(unemployed_ratio ~Race+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+b <- model$coefficients['job']
+cpr <- model$coefficients['Raceblack']
+a <- mediator_model$coefficients['Raceblack']
+c0 <-total_model$coefficients['Raceblack']
+c(c0, a, cpr, b)
+mediation_result <- mediate(mediator_model, model, sims = 10000, treat='Race', mediator = 'job', control.value = 'white', treat.value = 'black')
+summary(mediation_result)
+mediation_result$d0
+mediation_result$d0.ci
+mediation_result$z0
+mediation_result$z0.ci
+mediation_result$tau.coef
+mediation_result$tau.ci
+mediation_result$n0
+mediation_result$n0.ci
+```
+
+```{r}
+columns_to_check <- c('Race', 'job', 'unemployed_ratio')
+for_regress <- subset(CBG_data, complete.cases(CBG_data[, columns_to_check]))
+model <- lm(unemployed_ratio ~ job + Race+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediator_model <- lm(job ~ Race+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediation_result <- mediate(mediator_model, model, sims = 10000, treat='Race', mediator = 'job', control.value = 'white', treat.value = 'Hispanic')
+summary(mediation_result)
+mediation_result$d0
+mediation_result$d0.ci
+mediation_result$tau.coef
+mediation_result$tau.ci
+mediation_result$n0
+mediation_result$n0.ci
+```
+```{r}
+columns_to_check <- c('Race', 'bank', 'bank_dist')
+for_regress <- subset(CBG_data, complete.cases(CBG_data[, columns_to_check]))
+model <- lm(bank_dist ~ bank+Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediator_model <- lm(bank ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+
+total_model <- lm(bank_dist ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+
+b <- model$coefficients['bank']
+cpr <- model$coefficients['Raceblack']
+a <- mediator_model$coefficients['Raceblack']
+c0 <-total_model$coefficients['Raceblack']
+c(c0, a, cpr, b)
+
+mediation_result <- mediate(mediator_model, model, sims = 10000, treat='Race', mediator = 'bank', control.value = 'white', treat.value = 'black')
+summary(mediation_result)
+mediation_result$d0
+mediation_result$d0.ci
+mediation_result$z0
+mediation_result$z0.ci
+mediation_result$tau.coef
+mediation_result$tau.ci
+mediation_result$n0
+mediation_result$n0.ci
+```
+
+
+```{r}
+columns_to_check <- c('Race', 'bank', 'bank_dist')
+for_regress <- subset(CBG_data, complete.cases(CBG_data[, columns_to_check]))
+model <- lm(bank_dist ~ bank+Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediator_model <- lm(bank ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+
+total_model <- lm(bank_dist ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+
+b <- model$coefficients['bank']
+cpr <- model$coefficients['Raceblack']
+a <- mediator_model$coefficients['Raceblack']
+c0 <-total_model$coefficients['Raceblack']
+c(c0, a, cpr, b)
+
+mediation_result <- mediate(mediator_model, model, sims = 50, treat='Race', mediator = 'bank', control.value = 'white', treat.value = 'black')
+summary(mediation_result)
+mediation_result$d0
+mediation_result$d0.ci
+mediation_result$z0
+mediation_result$z0.ci
+mediation_result$tau.coef
+mediation_result$tau.ci
+mediation_result$n0
+mediation_result$n0.ci
+```
+
+
+```{r}
+columns_to_check <- c('Race', 'health', 'health_dist')
+for_regress <- subset(CBG_data, complete.cases(CBG_data[, columns_to_check]))
+model <- lm(health_dist ~ health+Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediator_model <- lm(health ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+
+total_model <- lm(health_dist ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+
+b <- model$coefficients['health']
+cpr <- model$coefficients['Raceblack']
+a <- mediator_model$coefficients['Raceblack']
+c0 <-total_model$coefficients['Raceblack']
+c(c0, a, cpr, b)
+
+mediation_result <- mediate(mediator_model, model, sims = 10000, treat='Race', mediator = 'health', control.value = 'white', treat.value = 'black')
+summary(mediation_result)
+mediation_result$d0
+mediation_result$d0.ci
+mediation_result$z0
+mediation_result$z0.ci
+mediation_result$tau.coef
+mediation_result$tau.ci
+mediation_result$n0
+mediation_result$n0.ci
+```
+
+```{r}
+columns_to_check <- c('Race', 'health', 'health_dist')
+for_regress <- subset(CBG_data, complete.cases(CBG_data[, columns_to_check]))
+model <- lm(health_dist ~ health+Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediator_model <- lm(health ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediation_result <- mediate(mediator_model, model, sims = 10000, treat='Race', mediator = 'health', control.value = 'white', treat.value = 'Hispanic')
+summary(mediation_result)
+mediation_result$d0
+mediation_result$d0.ci
+mediation_result$tau.coef
+mediation_result$tau.ci
+mediation_result$n0
+mediation_result$n0.ci
+```
+
+```{r}
+columns_to_check <- c('Race', 'park', 'park_dist')
+for_regress <- subset(CBG_data, complete.cases(CBG_data[, columns_to_check]))
+model <- lm(park_dist ~ park+Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediator_model <- lm(park ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+total_model <- lm(park_dist ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+
+b <- model$coefficients['park']
+cpr <- model$coefficients['Raceblack']
+a <- mediator_model$coefficients['Raceblack']
+c0 <-total_model$coefficients['Raceblack']
+c(c0, a, cpr, b)
+mediation_result <- mediate(mediator_model, model, sims = 10000, treat='Race', mediator = 'park', control.value = 'white', treat.value = 'black')
+summary(mediation_result)
+mediation_result$d0
+mediation_result$d0.ci
+mediation_result$z0
+mediation_result$z0.ci
+mediation_result$tau.coef
+mediation_result$tau.ci
+mediation_result$n0
+mediation_result$n0.ci
+```
+
+```{r}
+columns_to_check <- c('Race', 'park', 'park_dist')
+for_regress <- subset(CBG_data, complete.cases(CBG_data[, columns_to_check]))
+model <- lm(park_dist ~ park+Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediator_model <- lm(park ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediation_result <- mediate(mediator_model, model, sims = 10000, treat='Race', mediator = 'park', control.value = 'white', treat.value = 'Hispanic')
+summary(mediation_result)
+mediation_result$d0
+mediation_result$d0.ci
+mediation_result$tau.coef
+mediation_result$tau.ci
+mediation_result$n0
+mediation_result$n0.ci
+```
+
+```{r}
+columns_to_check <- c('Race', 'school', 'school_dist')
+for_regress <- subset(CBG_data, complete.cases(CBG_data[, columns_to_check]))
+model <- lm(school_dist ~ school+Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediator_model <- lm(school ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+
+total_model <- lm(school_dist ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+
+b <- model$coefficients['school']
+cpr <- model$coefficients['Raceblack']
+a <- mediator_model$coefficients['Raceblack']
+c0 <-total_model$coefficients['Raceblack']
+c(c0, a, cpr, b)
+
+mediation_result <- mediate(mediator_model, model, sims = 10000, treat='Race', mediator = 'school', control.value = 'white', treat.value = 'black')
+summary(mediation_result)
+mediation_result$d0
+mediation_result$d0.ci
+mediation_result$z0
+mediation_result$z0.ci
+mediation_result$tau.coef
+mediation_result$tau.ci
+mediation_result$n0
+mediation_result$n0.ci
+```
+
+```{r}
+columns_to_check <- c('Race', 'school', 'school_dist')
+for_regress <- subset(CBG_data, complete.cases(CBG_data[, columns_to_check]))
+model <- lm(school_dist ~ school+Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediator_model <- lm(school ~ Race+unemployed_ratio+foreign_born_ratio+income_percentile+vehicle_rate+public_transit_ratio+poverty_ratio, data = for_regress, weights = population)
+mediation_result <- mediate(mediator_model, model, sims = 10000, treat='Race', mediator = 'school', control.value = 'white', treat.value = 'Hispanic')
+summary(mediation_result)
+mediation_result$d0
+mediation_result$d0.ci
+mediation_result$tau.coef
+mediation_result$tau.ci
+mediation_result$n0
+mediation_result$n0.ci
+```
